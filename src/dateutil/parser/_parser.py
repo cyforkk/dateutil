@@ -829,6 +829,20 @@ class parser(object):
                     else:
                         raise ValueError(timestr)
 
+                    # Validate timezone offset components to prevent
+                    # silent acceptance of invalid offsets (e.g. minutes >= 60
+                    # or hours >= 24), matching isoparse() behavior.
+                    if not (0 <= min_offset < 60):
+                        raise ValueError(
+                            "minute offset in timezone must be in 0..59, "
+                            "got {0}".format(min_offset)
+                        )
+                    if not (0 <= hour_offset < 24):
+                        raise ValueError(
+                            "hour offset in timezone must be in 0..23, "
+                            "got {0}".format(hour_offset)
+                        )
+
                     res.tzoffset = signal * (hour_offset * 3600 + min_offset * 60)
 
                     # Look for a timezone name between parenthesis
